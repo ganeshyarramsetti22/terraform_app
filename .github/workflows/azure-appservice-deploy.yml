@@ -56,26 +56,29 @@ jobs:
 
 
   # ============================================================
-  # JOB 2 - DEPLOY NODE.JS APPLICATION
+  # JOB 2 - BUILD NODE.JS APPLICATION
   # ============================================================
-  deploy-app:
-    name: Deploy Node.js Application
+  build:
+    name: Build Node.js Application
     runs-on: ubuntu-latest
 
     needs: terraform
 
+    defaults:
+      run:
+        working-directory: application/simple-user-app
+
     steps:
 
+      # ----------------------------------------------------------
+      # Checkout repository
+      # ----------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+      # ----------------------------------------------------------
+      # Setup Node.js
+      # ----------------------------------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -83,16 +86,75 @@ jobs:
           cache: npm
           cache-dependency-path: application/simple-user-app/package-lock.json
 
+      # ----------------------------------------------------------
+      # Install dependencies
+      # ----------------------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+
+      # ----------------------------------------------------------
+      # Run tests
+      # ----------------------------------------------------------
+      - name: Run tests
+        run: npm test
+
+
+  # ============================================================
+  # JOB 3 - DEPLOY NODE.JS APPLICATION
+  # ============================================================
+  deploy-app:
+    name: Deploy Node.js Application
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+
+      # ----------------------------------------------------------
+      # Checkout repository
+      # ----------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ----------------------------------------------------------
+      # Azure Login using OIDC
+      # ----------------------------------------------------------
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # ----------------------------------------------------------
+      # Setup Node.js
+      # ----------------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: application/simple-user-app/package-lock.json
+
+      # ----------------------------------------------------------
+      # Install dependencies
+      # ----------------------------------------------------------
       - name: Install dependencies
         working-directory: application/simple-user-app
         run: npm ci
 
+      # ----------------------------------------------------------
+      # Deploy application to Azure App Service
+      # ----------------------------------------------------------
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: appservice-demo-gani-2026
           package: application/simple-user-app
 
+      # ----------------------------------------------------------
+      # Show App Service URL
+      # ----------------------------------------------------------
       - name: Show App Service URL
         run: |
           echo "Application deployed successfully!"

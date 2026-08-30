@@ -1,4 +1,4 @@
-location = "East US"
+location = "Jio India Central"
 
 resource_group_name = "rg-appservice-gani"
 
