@@ -1,0 +1,27 @@
+location = "East US"
+
+resource_group_name = "rg-appservice-demo"
+
+vnet_name = "vnet-appservice"
+
+vnet_address_space = [
+  "10.0.0.0/16"
+]
+
+app_service_subnet_name = "snet-appservice-integration"
+
+app_service_subnet_address_prefixes = [
+  "10.0.1.0/24"
+]
+
+private_endpoint_subnet_name = "snet-private-endpoints"
+
+private_endpoint_subnet_address_prefixes = [
+  "10.0.2.0/24"
+]
+
+tags = {
+  Environment = var.environment
+  ManagedBy   = var.managed_by
+  Project     = var.project_name
+}
