@@ -1,4 +1,4 @@
-location = "westindia"
+location = "indiasouthcentral"
 
 resource_group_name = "rg-appservice-gani"
 
