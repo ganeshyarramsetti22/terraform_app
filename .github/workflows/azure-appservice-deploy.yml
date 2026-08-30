@@ -138,4 +138,4 @@ jobs:
       - name: Show App Service URL
         run: |
           echo "Application deployed successfully!"
-          echo "https://appservice-demo-pallavi-2026.azurewebsites.net"
+          echo "https://appservice-demo-gani-2026.azurewebsites.net"
