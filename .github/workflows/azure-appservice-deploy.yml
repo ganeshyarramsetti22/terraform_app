@@ -26,15 +26,9 @@ jobs:
 
     steps:
 
-      # ----------------------------------------------------------
-      # Checkout repository
-      # ----------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ----------------------------------------------------------
-      # Azure Login using OIDC
-      # ----------------------------------------------------------
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -42,41 +36,21 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # ----------------------------------------------------------
-      # Setup Terraform
-      # ----------------------------------------------------------
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      # ----------------------------------------------------------
-      # Terraform Init
-      # ----------------------------------------------------------
       - name: Terraform Init
         run: terraform init
 
-      # ----------------------------------------------------------
-      # Terraform Format
-      # ----------------------------------------------------------
       - name: Terraform Format Check
         run: terraform fmt -check
 
-      # ----------------------------------------------------------
-      # Terraform Validate
-      # ----------------------------------------------------------
       - name: Terraform Validate
         run: terraform validate
 
-      # ----------------------------------------------------------
-      # Terraform Plan
-      # ----------------------------------------------------------
       - name: Terraform Plan
         run: terraform plan -var-file="terraform.tfvars" -out=tfplan
-        env:
-          TF_VAR_app_service_https_only: "true"
 
-      # ----------------------------------------------------------
-      # Terraform Apply
-      # ----------------------------------------------------------
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
 
@@ -92,15 +66,9 @@ jobs:
 
     steps:
 
-      # ----------------------------------------------------------
-      # Checkout repository
-      # ----------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ----------------------------------------------------------
-      # Azure Login using OIDC
-      # ----------------------------------------------------------
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -108,9 +76,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # ----------------------------------------------------------
-      # Setup Node.js
-      # ----------------------------------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -118,25 +83,16 @@ jobs:
           cache: npm
           cache-dependency-path: application/simple-user-app/package-lock.json
 
-      # ----------------------------------------------------------
-      # Install dependencies
-      # ----------------------------------------------------------
       - name: Install dependencies
         working-directory: application/simple-user-app
         run: npm ci
 
-      # ----------------------------------------------------------
-      # Deploy application to Azure App Service
-      # ----------------------------------------------------------
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
-          app-name: appservice-demo-pallavi-2026
+          app-name: appservice-demo-gani-2026
           package: application/simple-user-app
 
-      # ----------------------------------------------------------
-      # Show application URL
-      # ----------------------------------------------------------
       - name: Show App Service URL
         run: |
           echo "Application deployed successfully!"
