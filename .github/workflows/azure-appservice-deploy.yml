@@ -7,6 +7,12 @@ on:
 
   workflow_dispatch:
 
+# Prevent multiple Terraform runs from accessing the same state
+# at the same time.
+concurrency:
+  group: terraform-appservice
+  cancel-in-progress: false
+
 permissions:
   id-token: write
   contents: read
@@ -26,9 +32,15 @@ jobs:
 
     steps:
 
+      # ----------------------------------------------------------
+      # Checkout repository
+      # ----------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ----------------------------------------------------------
+      # Azure Login using OIDC
+      # ----------------------------------------------------------
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -36,21 +48,39 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      # ----------------------------------------------------------
+      # Setup Terraform
+      # ----------------------------------------------------------
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # ----------------------------------------------------------
+      # Terraform Init
+      # ----------------------------------------------------------
       - name: Terraform Init
         run: terraform init
 
+      # ----------------------------------------------------------
+      # Terraform Format
+      # ----------------------------------------------------------
       - name: Terraform Format Check
         run: terraform fmt -check
 
+      # ----------------------------------------------------------
+      # Terraform Validate
+      # ----------------------------------------------------------
       - name: Terraform Validate
         run: terraform validate
 
+      # ----------------------------------------------------------
+      # Terraform Plan
+      # ----------------------------------------------------------
       - name: Terraform Plan
         run: terraform plan -var-file="terraform.tfvars" -out=tfplan
 
+      # ----------------------------------------------------------
+      # Terraform Apply
+      # ----------------------------------------------------------
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
 
@@ -98,6 +128,14 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # ----------------------------------------------------------
+      # Verify application
+      # ----------------------------------------------------------
+      - name: Verify application files
+        run: |
+          echo "Build/Test completed successfully"
+          ls -la
+
 
   # ============================================================
   # JOB 3 - DEPLOY NODE.JS APPLICATION
@@ -125,23 +163,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # ----------------------------------------------------------
-      # Setup Node.js
-      # ----------------------------------------------------------
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: application/simple-user-app/package-lock.json
-
-      # ----------------------------------------------------------
-      # Install dependencies
-      # ----------------------------------------------------------
-      - name: Install dependencies
-        working-directory: application/simple-user-app
-        run: npm ci
 
       # ----------------------------------------------------------
       # Deploy application to Azure App Service
