@@ -55,7 +55,7 @@ app_service_name = "appservice-demo-gani-2026"
 
 app_service_plan_sku = "B1"
 
-app_service_runtime_stack = "20-lts"
+app_service_runtime_stack = "24-lts"
 
 app_service_https_only = true
 
