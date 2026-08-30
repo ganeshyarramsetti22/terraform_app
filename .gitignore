@@ -16,3 +16,5 @@ terraform.tfvars
 # OS
 Thumbs.db
 .DS_Store
+node_modules/
+npm-debug.log*
