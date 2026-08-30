@@ -71,6 +71,8 @@ jobs:
       # ----------------------------------------------------------
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+        env:
+          TF_VAR_app_service_https_only: "true"
 
       # ----------------------------------------------------------
       # Terraform Apply
