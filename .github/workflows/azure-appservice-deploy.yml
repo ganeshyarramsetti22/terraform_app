@@ -70,7 +70,7 @@ jobs:
       # Terraform Plan
       # ----------------------------------------------------------
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
         env:
           TF_VAR_app_service_https_only: "true"
 
