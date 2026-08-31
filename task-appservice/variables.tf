@@ -1,3 +1,7 @@
+# ==========================================
+# General Variables
+# ==========================================
+
 variable "location" {
   description = "Azure region"
   type        = string
@@ -53,12 +57,13 @@ variable "managed_by" {
   type        = string
 }
 
-# =========================
+
+# ==========================================
 # Azure SQL Variables
-# =========================
+# ==========================================
 
 variable "sql_server_name" {
-  description = "Azure SQL logical server name"
+  description = "Azure SQL Server name"
   type        = string
 }
 
@@ -92,9 +97,20 @@ variable "sql_entra_admin_object_id" {
   type        = string
 }
 
-# =========================
+
+# ==========================================
+# Azure SQL Role Variables
+# ==========================================
+
+variable "sql_database_role_name" {
+  description = "Azure SQL database role assigned to the App Service Managed Identity"
+  type        = string
+}
+
+
+# ==========================================
 # App Service Variables
-# =========================
+# ==========================================
 
 variable "app_service_plan_name" {
   description = "App Service Plan name"
@@ -121,9 +137,30 @@ variable "app_service_https_only" {
   type        = bool
 }
 
-# =========================
+
+# ==========================================
+# App Service Managed Identity
+# ==========================================
+
+variable "app_service_identity_type" {
+  description = "Managed identity type for the App Service"
+  type        = string
+  default     = "SystemAssigned"
+
+  validation {
+    condition = contains(
+      ["SystemAssigned", "None"],
+      var.app_service_identity_type
+    )
+
+    error_message = "Identity type must be SystemAssigned or None."
+  }
+}
+
+
+# ==========================================
 # Monitoring Variables
-# =========================
+# ==========================================
 
 variable "log_analytics_workspace_name" {
   description = "Log Analytics Workspace name"
@@ -155,9 +192,10 @@ variable "application_insights_retention_days" {
   type        = number
 }
 
-# =========================
+
+# ==========================================
 # Key Vault Variables
-# =========================
+# ==========================================
 
 variable "key_vault_name" {
   description = "Azure Key Vault name"
@@ -186,10 +224,5 @@ variable "key_vault_purge_protection_enabled" {
 
 variable "key_vault_private_dns_zone_name" {
   description = "Private DNS zone name for Key Vault"
-  type        = string
-}
-
-variable "sql_database_role_name" {
-  description = "Azure SQL database role assigned to the App Service Managed Identity"
   type        = string
 }

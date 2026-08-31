@@ -53,9 +53,9 @@ app_service_plan_name = "asp-appservice-demo-gani"
 
 app_service_name = "appservice-demo-gani-2026"
 
-app_service_plan_sku = "B1"
+app_service_plan_sku = "B3"
 
-app_service_runtime_stack = "24-lts"
+app_service_runtime_stack = "22-lts"
 
 app_service_https_only = true
 
@@ -91,3 +91,4 @@ key_vault_purge_protection_enabled = false
 
 key_vault_private_dns_zone_name = "privatelink.vaultcore.azure.net"
 sql_database_role_name          = "db_datareader"
+app_service_identity_type       = "SystemAssigned"
